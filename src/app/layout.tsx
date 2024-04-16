@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
+import Link from "next/link";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,6 +14,30 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const TopNav = () => (
+  <nav className="">
+    <div className="flex flex-wrap items-center justify-between bg-gray-800 p-4">
+      <div className="mr-6 flex flex-shrink-0 items-center text-white">
+        <Link href="/">
+          <h1 className="text-3xl font-bold tracking-tight">Gallery</h1>
+        </Link>
+      </div>
+      <ul className="flex gap-x-3">
+        <li>
+          <Link className="text-white hover:text-gray-200" href="/">
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link className="text-white hover:text-gray-200" href="/">
+            Sign in
+          </Link>
+        </li>
+      </ul>
+    </div>
+  </nav>
+);
+
 export default function RootLayout({
   children,
 }: {
@@ -20,7 +45,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>{children}</body>
+      <body className={`font-sans ${inter.variable}`}>
+        <TopNav />
+        {children}
+      </body>
     </html>
   );
 }
