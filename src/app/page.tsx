@@ -1,33 +1,33 @@
+import { db } from "~/server/db";
 import Image from "next/image";
 import Link from "next/link";
 
-const mockImageUrls = [
-  "https://utfs.io/f/6f9bd984-a35a-45a7-9c3f-f0484a16a13b-mgobc5.png",
-  "https://utfs.io/f/1a4904d7-bd90-4e46-9a7d-af16c3c6133e-s39ju4.jpg",
-  "https://utfs.io/f/a0b8fc48-1626-4e68-bb0a-210ca029a804-9gpu2.png",
-  "https://utfs.io/f/b1262acb-e2f3-4a99-981a-28feb5ad2072-u67de7.png",
-];
+export const dynamic = "force-dynamic";
 
-const mockImages = mockImageUrls.map((url, index) => ({
-  id: index + 1,
-  url,
-}));
+export default async function HomePage() {
+  const images = await db.query.images.findMany();
 
-export default function HomePage() {
   return (
     <main className="">
-      <div className="flex flex-wrap gap-4">
-        {[...mockImages, ...mockImages, ...mockImages].map((img) => (
-          <div key={img.id} className="w-48">
-            <Link href={`/post/${img.id}`}>
+      <div className="mt-12 flex flex-wrap gap-x-4 gap-y-8">
+        {[...images, ...images, ...images].map((img, index) => (
+          <div
+            key={img.id + "-" + index}
+            className="flex w-52 flex-col justify-between gap-4"
+          >
+            <Link
+              href={`/post/${img.id}`}
+              className="h-[12vh] max-h-64 min-h-32"
+            >
               <Image
                 width={300}
                 height={300}
                 src={img.url}
                 alt={img.id.toString()}
-                className="h-auto w-full"
+                className="size-full"
               />
             </Link>
+            <span>{img.name}</span>
           </div>
         ))}
       </div>

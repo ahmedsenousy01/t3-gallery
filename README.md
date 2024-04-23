@@ -5,8 +5,8 @@
 - [x] Make it deploy (vercel)
 - [x] Scaffold basic ui and mock data
 - [x] Tidy up build process
-- [ ] Actually set up a database (vercel postgres)
-- [ ] Attack database to ui
+- [x] Actually set up a database (vercel postgres)
+- [x] Attack database to ui
 - [ ] Add authentication (w/ clerk)
 - [ ] Add image upload
 - [ ] Error management (w/ Sentry)
@@ -14,3 +14,4 @@
 - [ ] Delete button (w/ Server Actions)
 - [ ] Analytics (posthog)
 - [ ] Rate limiting (upstash)
+ 
