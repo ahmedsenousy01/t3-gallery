@@ -40,3 +40,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# Sentry Config File
+.sentryclirc
+
+# Sentry Config File
+.sentryclirc
