@@ -12,7 +12,7 @@ async function Images() {
     <div className="mx-auto mt-24 flex w-[95%] flex-wrap gap-x-4 gap-y-8">
       {images.map((img) => (
         <div key={img.id} className="flex w-52 flex-col justify-between gap-4">
-          <Link href={`/post/${img.id}`} className="h-[12vh] max-h-64 min-h-32">
+          <Link href={`/images/${img.id}`} className="h-[12vh] max-h-64 min-h-32">
             {/* TODO: look up how does image component work with (width, height, objectFit, and css height and width) */}
             <Image
               src={img.url}
