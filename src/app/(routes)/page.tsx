@@ -9,7 +9,7 @@ async function Images() {
   const images = await getUserImages();
 
   return (
-    <div className="mx-auto mt-24 flex w-[95%] flex-wrap gap-x-4 gap-y-8">
+    <div className="mx-auto mt-32 flex w-[95%] flex-wrap gap-x-4 gap-y-8">
       {images.map((img) => (
         <div key={img.id} className="flex w-52 flex-col justify-between gap-4">
           <Link href={`/images/${img.id}`} className="h-[12vh] max-h-64 min-h-32">
@@ -18,7 +18,7 @@ async function Images() {
               src={img.url}
               width={300}
               height={300}
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "fill" }}
               className="size-full"
               alt={img.id.toString()}
             />
