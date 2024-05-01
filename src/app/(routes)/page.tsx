@@ -9,10 +9,13 @@ async function Images() {
   const images = await getUserImages();
 
   return (
-    <div className="mx-auto mt-32 flex w-[95%] flex-wrap gap-x-4 gap-y-8">
-      {images.map((img) => (
+    <div className="flex flex-wrap justify-center gap-5 p-6">
+      {[...images, ...images, ...images, ...images].map((img) => (
         <div key={img.id} className="flex w-52 flex-col justify-between gap-4">
-          <Link href={`/images/${img.id}`} className="h-[12vh] max-h-64 min-h-32">
+          <Link
+            href={`/images/${img.id}`}
+            className="h-[12vh] max-h-64 min-h-32"
+          >
             {/* TODO: look up how does image component work with (width, height, objectFit, and css height and width) */}
             <Image
               src={img.url}
@@ -32,7 +35,7 @@ async function Images() {
 
 export default async function HomePage() {
   return (
-    <main className="">
+    <>
       <SignedOut>
         <div className="flex h-screen flex-col items-center justify-center">
           <h1 className="text-4xl font-bold">Welcome to the Gallery!</h1>
@@ -42,6 +45,6 @@ export default async function HomePage() {
       <SignedIn>
         <Images />
       </SignedIn>
-    </main>
+    </>
   );
 }
