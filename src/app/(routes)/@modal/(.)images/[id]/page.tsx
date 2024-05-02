@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Modal } from "../../../../_components/modal";
-import { getImageById } from "~/server/queries";
+import { deleteImageById, getImageById } from "~/server/queries";
+import { Button } from "~/components/ui/button";
 
 export default async function page({
   params: { id: ImageId },
@@ -21,6 +22,17 @@ export default async function page({
         src={image.url}
         alt={image.name}
       />
+      <form
+        action={async () => {
+          "use server";
+          await deleteImageById(NumId);
+        }}
+        className="absolute right-10 top-10"
+      >
+        <Button variant="destructive" type="submit">
+          Delete
+        </Button>
+      </form>
     </Modal>
   );
 }
