@@ -1,21 +1,23 @@
 import "server-only";
+
 import { auth } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
 import { images } from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 
-export async function getUserImages() {
+export async function getUserImages(page = 1, limit = 5) {
     const user = auth();
     if (!user.userId) throw new Error("Unauthorized!");
 
     return await db.query.images.findMany({
         where: (model, { eq }) => eq(model.userId, user.userId),
         orderBy: (model, { desc }) => desc(model.id),
+        offset: (page - 1) * limit,
+        limit,
     });
 }
 
-export async function getImageById(id: number) {
+export async function getImageById(id: string) {
     const user = auth();
     if (!user.userId) throw new Error("Unauthorized!");
 
@@ -29,7 +31,7 @@ export async function getImageById(id: number) {
     return image;
 }
 
-export async function deleteImageById(id: number) {
+export async function deleteImageById(id: string) {
     const user = auth();
     if (!user.userId) throw new Error("Unauthorized!");
 
@@ -37,5 +39,18 @@ export async function deleteImageById(id: number) {
         .delete(images)
         .where(and(eq(images.id, id), eq(images.userId, user.userId)));
 
-    redirect("/");
+    return true;
+}
+
+export async function batchDelete(ids: string[]) {
+    const user = auth();
+    if (!user.userId) throw new Error("Unauthorized!");
+
+    for (const id of ids) {
+        await db
+            .delete(images)
+            .where(and(eq(images.id, id), eq(images.userId, user.userId)));
+    }
+
+    return true;
 }

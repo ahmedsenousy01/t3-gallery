@@ -10,6 +10,7 @@ import Navbar from "~/app/_components/navbar";
 import { ourFileRouter } from "~/app/api/uploadthing/core";
 import { Toaster } from "~/components/ui/sonner";
 import { CSPostHogProvider } from "~/components/providers/posthog";
+import ReduxStoreProvider from "~/components/providers/reduxStoreProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,29 +32,31 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <CSPostHogProvider>
-        {/* TODO: look up how ssr works and why this is necessary */}
-        <NextSSRPlugin
-          /**
-           * The `extractRouterConfig` will extract **only** the route configs
-           * from the router to prevent additional information from being
-           * leaked to the client. The data passed to the client is the same
-           * as if you were to fetch `/api/uploadthing` directly.
-           */
-          routerConfig={extractRouterConfig(ourFileRouter)}
-        />
-        <html lang="en">
-          <body className={`font-sans ${inter.variable} dark`}>
-            <div className="grid h-screen grid-rows-[auto,1fr]">
-              <Navbar />
-              <main className="overflow-y-scroll">{children}</main>
-              {modal}
-            </div>
-            <div id="modal-root" />
-            <Toaster />
-          </body>
-        </html>
-      </CSPostHogProvider>
+      <ReduxStoreProvider>
+        <CSPostHogProvider>
+          {/* TODO: look up how ssr works and why this is necessary */}
+          <NextSSRPlugin
+            /**
+             * The `extractRouterConfig` will extract **only** the route configs
+             * from the router to prevent additional information from being
+             * leaked to the client. The data passed to the client is the same
+             * as if you were to fetch `/api/uploadthing` directly.
+             */
+            routerConfig={extractRouterConfig(ourFileRouter)}
+          />
+          <html lang="en">
+            <body className={`font-sans ${inter.variable} dark`}>
+              <div className="grid h-screen grid-rows-[auto,1fr]">
+                <Navbar />
+                <main className="overflow-y-auto">{children}</main>
+                {modal}
+              </div>
+              <div id="modal-root" />
+              <Toaster />
+            </body>
+          </html>
+        </CSPostHogProvider>
+      </ReduxStoreProvider>
     </ClerkProvider>
   );
 }

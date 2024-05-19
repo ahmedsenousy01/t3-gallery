@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { nanoid } from "~/lib/utils";
 import { db } from "~/server/db";
 import { images } from "~/server/db/schema";
 
@@ -28,6 +29,7 @@ export const ourFileRouter = {
             console.log("file url", file.url);
 
             await db.insert(images).values({
+                id: nanoid(),
                 name: file.name,
                 url: file.url,
                 userId: metadata.userId,

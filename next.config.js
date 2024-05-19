@@ -34,6 +34,8 @@ const coreConfig = {
     ];
   },
 };
+
+// TODO: learn more about error management w/ sentry
 const config = withSentryConfig(
   coreConfig,
   {

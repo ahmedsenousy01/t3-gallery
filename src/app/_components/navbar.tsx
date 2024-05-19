@@ -1,9 +1,20 @@
+"use client";
+
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 import UploadButton from "~/app/_components/uploadBtn";
+import { DeleteButton } from "./deleteImagesBtn";
+import { useAppSelector } from "~/lib/redux/hooks";
+import { SelectImagesIcon } from "~/app/_components/select-images-icon";
+import { SelectAllIcon } from "~/app/_components/select-all-icon";
+import { CloseButtonIcon } from "~/app/_components/close-button-icon";
 
 export default function Navbar() {
+  const selectionModeOn = useAppSelector(
+    (state) => state.images.selectionModeOn,
+  );
+
   return (
     <nav className="">
       <div className="flex flex-wrap items-center justify-between bg-gray-800 p-4">
@@ -17,8 +28,19 @@ export default function Navbar() {
             <SignInButton />
           </SignedOut>
           <SignedIn>
-            <UploadButton />
-            <UserButton />
+            {selectionModeOn ? (
+              <>
+                <DeleteButton />
+                <SelectAllIcon />
+                <CloseButtonIcon />
+              </>
+            ) : (
+              <>
+                <SelectImagesIcon />
+                <UploadButton />
+                <UserButton />
+              </>
+            )}
           </SignedIn>
         </div>
       </div>
