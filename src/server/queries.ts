@@ -5,7 +5,15 @@ import { db } from "~/server/db";
 import { images } from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
 
-export async function getUserImages(page = 1, limit = 5) {
+export async function getAllImages(page = 1, limit = 5) {
+    return await db.query.images.findMany({
+        orderBy: (model, { desc }) => desc(model.id),
+        offset: (page - 1) * limit,
+        limit,
+    });
+}
+
+export async function getRecommendedImages(page = 1, limit = 5) {
     const user = auth();
     if (!user.userId) throw new Error("Unauthorized!");
 
@@ -14,6 +22,16 @@ export async function getUserImages(page = 1, limit = 5) {
         orderBy: (model, { desc }) => desc(model.id),
         offset: (page - 1) * limit,
         limit,
+    });
+}
+
+export async function getUserImages() {
+    const user = auth();
+    if (!user.userId) throw new Error("Unauthorized!");
+
+    return await db.query.images.findMany({
+        where: (model, { eq }) => eq(model.userId, user.userId),
+        orderBy: (model, { desc }) => desc(model.id),
     });
 }
 

@@ -2,23 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
-
-import { fetchAllImages } from "~/server/actions";
-import { type Image as ImageType } from "~/server/db/schema";
-import { useAppSelector, useAppDispatch } from "~/lib/redux/hooks";
+import { useEffect, useState } from "react";
 import {
-  addImages,
   checkIsAllImagesSelected,
-  initCurrentImages,
   selectImage,
   unselectImage,
 } from "~/lib/redux/features/images/imageSlice";
+import { useAppDispatch, useAppSelector } from "~/lib/redux/hooks";
+import { fetchUserImages } from "~/server/actions";
+import { type Image as ImageType } from "~/server/db/schema";
 
-export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
+export const dynamic = "force-dynamic";
+
+export default function UserImagesPage() {
+  const [images, setImages] = useState<ImageType[]>([]);
+
   const dispatch = useAppDispatch();
-  const images = useAppSelector((state) => state.images.currentImages);
   const selectionModeOn = useAppSelector(
     (state) => state.images.selectionModeOn,
   );
@@ -27,33 +26,13 @@ export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
   );
 
   useEffect(() => {
-    dispatch(initCurrentImages(initialImages));
-  }, [initialImages, dispatch]);
-
-  const [page, setPage] = useState(1);
-  const [moreImagesExist, setMoreImagesExist] = useState(true);
-  const [ref, inView] = useInView({
-    delay: 250,
-  });
-
-  const loadMoreImages = useCallback(async () => {
-    const newImages = await fetchAllImages(page + 1);
-    if (newImages.length === 0) {
-      setMoreImagesExist(false);
-      return;
-    }
-    dispatch(addImages(newImages));
-    setPage((prevPage) => prevPage + 1);
-  }, [page, dispatch]);
-
-  useEffect(() => {
-    const loadImagesAsync = async () => {
-      if (inView) {
-        await loadMoreImages();
-      }
+    const initImages = async () => {
+      const imgs = await fetchUserImages();
+      setImages(imgs);
     };
-    void loadImagesAsync();
-  }, [inView, loadMoreImages, images]);
+
+    void initImages();
+  }, []);
 
   return (
     <>
@@ -114,11 +93,6 @@ export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
           </div>
         ))}
       </div>
-      {moreImagesExist && (
-        <div className="flex items-center justify-center" ref={ref}>
-          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-white/50 border-b-white/50 border-t-white/50" />
-        </div>
-      )}
     </>
   );
 }
