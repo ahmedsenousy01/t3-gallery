@@ -20,6 +20,57 @@ import { useEffect, useState } from "react";
 import ImageCropper from "./upload-image-modal";
 import { FolderIcon } from "./folder-icon";
 import { FolderPlusIcon } from "./folder-plus-icon";
+import { type Album } from "~/server/db/schema";
+import { addImagesToAlbum, fetchUserAlbums } from "~/server/actions";
+import {
+  toggleSelectionMode,
+  unselectAllImages,
+} from "~/lib/redux/features/images/imageSlice";
+
+function AddImagesToAlbum() {
+  const dispatch = useAppDispatch();
+  const activeImageContainer = useAppSelector(
+    (state) => state.images.activeImageContainer,
+  );
+  const selectedImagesIds = useAppSelector(
+    (state) =>
+      state.images.currentImages[activeImageContainer]?.selectedImageIds,
+  );
+
+  const [albums, setAlbums] = useState<Album[]>([]);
+
+  useEffect(() => {
+    fetchUserAlbums()
+      .then((res) => setAlbums(res))
+      .catch((err) => console.log(err));
+  }, []);
+
+  return (
+    <div className="bg-white p-6">
+      <div className="mb-8 flex flex-wrap gap-4">
+        {albums.map((album) => (
+          <div
+            key={album.id}
+            className="flex h-40 w-40 cursor-pointer items-center justify-center rounded-lg bg-gray-700 shadow-md"
+            onClick={async () => {
+              const res = await addImagesToAlbum(
+                album.id,
+                selectedImagesIds ?? [],
+              );
+              if (res) {
+                dispatch(closeAddImageToAlbumModal());
+                dispatch(unselectAllImages());
+                dispatch(toggleSelectionMode());
+              }
+            }}
+          >
+            <span className="text-lg">{album.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
@@ -109,10 +160,7 @@ export default function Navbar() {
             isOpen={addImageToAlbumModalIsOpen}
             closeModal={closeAddImageToAlbumModal}
           >
-            <div className="bg-white p-6">
-              <div>add images to album</div>
-              <div>albums list</div>
-            </div>
+            <AddImagesToAlbum />
           </Modal>
         </>
       )}

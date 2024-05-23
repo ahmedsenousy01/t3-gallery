@@ -2,8 +2,9 @@ import "server-only";
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
-import { images } from "~/server/db/schema";
+import { imageAlbums, images } from "~/server/db/schema";
 import { and, eq } from "drizzle-orm";
+import { nanoid } from "~/lib/utils";
 
 export async function getAllImages(page = 1, limit = 5) {
     return await db.query.images.findMany({
@@ -108,4 +109,21 @@ export async function getAlbumImages(albumId: string) {
     return await db.query.images.findMany({
         where: (model, { inArray }) => inArray(model.id, (imageIds.length > 0 ? imageIds : ["empty"])) // inArray doesn't work with empty array
     });
+}
+
+export async function batchAddImagesToAlbum(albumId: string, imageIds: string[]) {
+    const user = auth();
+    if (!user.userId) throw new Error("Unauthorized!");
+
+    for (const id of imageIds) {
+        await db
+            .insert(imageAlbums)
+            .values({
+                id: nanoid(),
+                albumId,
+                imageId: id,
+            });
+    }
+
+    return true;
 }

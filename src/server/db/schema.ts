@@ -57,5 +57,5 @@ export const imageAlbums = createTable(
 );
 
 export type Image = InferSelectModel<typeof images>;
-export type album = InferSelectModel<typeof albums>;
+export type Album = InferSelectModel<typeof albums>;
 export type ImageAlbum = InferSelectModel<typeof imageAlbums>;
