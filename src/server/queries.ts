@@ -54,3 +54,40 @@ export async function batchDelete(ids: string[]) {
 
     return true;
 }
+
+export async function getUserAlbums() {
+    const user = auth();
+    if (!user.userId) throw new Error("Unauthorized!");
+
+    return await db.query.albums.findMany({
+        where: (model, { eq }) => eq(model.userId, user.userId),
+        orderBy: (model, { desc }) => desc(model.id),
+    });
+}
+
+export async function getAlbumById(id: string) {
+    const user = auth();
+    if (!user.userId) throw new Error("Unauthorized!");
+
+    const album = await db.query.albums.findFirst({
+        where: (model, { eq }) => eq(model.id, id),
+    });
+
+    if (!album) throw new Error("Album not found!");
+    if (album.userId !== user.userId) throw new Error("Unauthorized!");
+
+    return album;
+}
+
+export async function getAlbumImages(albumId: string) {
+    await getAlbumById(albumId);
+
+    const imageIds = (await db.query.imageAlbums.findMany({
+        where: (model, { eq }) => eq(model.albumId, albumId),
+        orderBy: (model, { desc }) => desc(model.id),
+    })).map((i) => i.imageId);
+
+    return await db.query.images.findMany({
+        where: (model, { inArray }) => inArray(model.id, (imageIds.length > 0 ? imageIds : ["empty"])) // inArray doesn't work with empty array
+    });
+}

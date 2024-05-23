@@ -30,9 +30,32 @@ export const images = createTable(
       .notNull(),
     updatedAt: timestamp("updatedAt"),
   },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
+  (table) => ({
+    nameIndex: index("image_name_idx").on(table.name),
   })
 );
 
+export const albums = createTable(
+  "albums",
+  {
+    id: char("id", { length: 20 }).primaryKey(),
+    name: varchar("name", { length: 256 }).notNull(),
+    userId: varchar("userId", { length: 256 }).notNull(),
+  },
+  (table) => ({
+    nameIndex: index("album_name_idx").on(table.name),
+  })
+);
+
+export const imageAlbums = createTable(
+  "image_albums",
+  {
+    id: char("id", { length: 20 }).primaryKey(),
+    albumId: char("album_id", { length: 20 }).notNull().references(() => albums.id),
+    imageId: char("image_id", { length: 20 }).notNull().references(() => images.id),
+  }
+);
+
 export type Image = InferSelectModel<typeof images>;
+export type album = InferSelectModel<typeof albums>;
+export type ImageAlbum = InferSelectModel<typeof imageAlbums>;
