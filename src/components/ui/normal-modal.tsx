@@ -2,19 +2,18 @@
 
 import { type ElementRef, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { closeUploadImageModal } from "~/lib/redux/features/modals/modalSlice";
-import { useAppDispatch, useAppSelector } from "~/lib/redux/hooks";
+import { useAppDispatch } from "~/lib/redux/hooks";
 
-export function Modal({ children }: { children: React.ReactNode }) {
+export function Modal(props: {
+  isOpen: boolean;
+  closeModal: () => { type: string; payload: undefined };
+  children: React.ReactNode;
+}) {
   const dispatch = useAppDispatch();
   const dialogRef = useRef<ElementRef<"dialog">>(null);
 
-  const uploadImageModalOpen = useAppSelector(
-    (state) => state.modals.uploadImageModal.isOpen,
-  );
-
   useEffect(() => {
-    if (uploadImageModalOpen) {
+    if (props.isOpen) {
       dialogRef.current?.showModal();
     } else {
       dialogRef.current?.close();
@@ -23,28 +22,28 @@ export function Modal({ children }: { children: React.ReactNode }) {
     return () => {
       if (dialogRef.current?.open) {
         dialogRef.current.close();
-        dispatch(closeUploadImageModal());
+        dispatch(props.closeModal());
       }
     };
-  }, [uploadImageModalOpen, dispatch]);
+  }, [props, dispatch]);
 
   function onDismiss() {
     dialogRef.current?.close();
-    dispatch(closeUploadImageModal());
+    dispatch(props.closeModal());
   }
 
   if (typeof document === "undefined") {
     return null; // Return null during SSR
   }
 
-  return uploadImageModalOpen
+  return props.isOpen
     ? createPortal(
         <dialog
           ref={dialogRef}
           className="relative flex h-screen w-[100%] items-center justify-center bg-zinc-900/50"
           onClose={onDismiss}
         >
-          {children}
+          {props.children}
           <button
             onClick={onDismiss}
             className="absolute inset-0 z-[-1] cursor-default"

@@ -3,11 +3,17 @@ import { createSlice } from "@reduxjs/toolkit"
 const initialState: {
     uploadImageModal: {
         isOpen: boolean,
-    }
+    },
+    addImageToAlbumModal: {
+        isOpen: boolean,
+    },
 } = {
     uploadImageModal: {
         isOpen: false,
-    }
+    },
+    addImageToAlbumModal: {
+        isOpen: false,
+    },
 }
 
 const modalSlice = createSlice({
@@ -19,9 +25,15 @@ const modalSlice = createSlice({
         },
         closeUploadImageModal: (state) => {
             state.uploadImageModal.isOpen = false;
-        }
+        },
+        openAddImageToAlbumModal: (state) => {
+            state.addImageToAlbumModal.isOpen = true;
+        },
+        closeAddImageToAlbumModal: (state) => {
+            state.addImageToAlbumModal.isOpen = false;
+        },
     }
 })
 
-export const { openUploadImageModal, closeUploadImageModal } = modalSlice.actions;
+export const { openUploadImageModal, closeUploadImageModal, openAddImageToAlbumModal, closeAddImageToAlbumModal } = modalSlice.actions;
 export default modalSlice.reducer;
