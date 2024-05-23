@@ -3,7 +3,7 @@
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
-import UploadButton, { UploadBtnSvg } from "~/app/_components/uploadBtn";
+import { UploadBtnSvg } from "~/app/_components/uploadBtn";
 import { DeleteButton } from "./deleteImagesBtn";
 import { useAppDispatch, useAppSelector } from "~/lib/redux/hooks";
 import { SelectImagesIcon } from "~/app/_components/select-images-icon";
@@ -18,16 +18,22 @@ import {
 import { useEffect, useState } from "react";
 import ImageCropper from "./upload-image-modal";
 import { FolderIcon } from "./folder-icon";
+import { FolderPlusIcon } from "./folder-plus-icon";
 
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
   const dispatch = useAppDispatch();
 
+  const activeImageContainer = useAppSelector(
+    (state) => state.images.activeImageContainer,
+  );
+
   const selectionModeOn = useAppSelector(
     (state) => state.images.selectionModeOn,
   );
   const isAllImagesSelected = useAppSelector(
-    (state) => state.images.isAllImagesSelected,
+    (state) =>
+      state.images.currentImages[activeImageContainer]?.isAllImagesSelected,
   );
 
   useEffect(() => {
@@ -57,6 +63,7 @@ export default function Navbar() {
               <SignedIn>
                 {selectionModeOn ? (
                   <>
+                    <FolderPlusIcon />
                     <DeleteButton />
                     {isAllImagesSelected ? (
                       <UnSelectAllIcon />

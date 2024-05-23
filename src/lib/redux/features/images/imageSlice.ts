@@ -1,47 +1,86 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { type Image as ImageType } from '~/server/db/schema';
 
-const initialState: { currentImages: ImageType[], selectedImageIds: string[], selectionModeOn: boolean, isAllImagesSelected: boolean } = {
-    currentImages: [],
-    selectedImageIds: [],
-    selectionModeOn: false,
-    isAllImagesSelected: false,
+interface ImageState {
+    currentImages: Record<string, { selectedImageIds: string[]; isAllImagesSelected: boolean; images: ImageType[] }>;
+    selectionModeOn: boolean;
+    activeImageContainer: string;
 }
+
+const initialState: ImageState = {
+    currentImages: {
+        mainFeed: {
+            selectedImageIds: [],
+            isAllImagesSelected: false,
+            images: [],
+        },
+    },
+    selectionModeOn: false,
+    activeImageContainer: 'mainFeed',
+};
 
 export const imageSlice = createSlice({
     name: 'image',
     initialState,
     reducers: {
         initCurrentImages: (state, action: PayloadAction<ImageType[]>) => {
-            state.currentImages = action.payload;
+            const container = state.activeImageContainer;
+            state.currentImages[container] = { selectedImageIds: [], isAllImagesSelected: false, images: action.payload };
         },
         addImages: (state, action: PayloadAction<ImageType[]>) => {
-            state.currentImages = [...state.currentImages, ...action.payload];
+            const container = state.activeImageContainer;
+            if (!state.currentImages[container]) {
+                state.currentImages[container] = { selectedImageIds: [], isAllImagesSelected: false, images: [] };
+            }
+            state.currentImages[container]!.images = [...state.currentImages[container]!.images, ...action.payload];
         },
         selectImage: (state, action: PayloadAction<string>) => {
-            state.selectedImageIds.push(action.payload);
+            const container = state.activeImageContainer;
+            if (!state.currentImages[container]!.selectedImageIds.includes(action.payload)) {
+                state.currentImages[container]!.selectedImageIds.push(action.payload);
+            }
         },
         unselectImage: (state, action: PayloadAction<string>) => {
-            state.selectedImageIds = state.selectedImageIds.filter(id => id !== action.payload);
+            const container = state.activeImageContainer;
+            state.currentImages[container]!.selectedImageIds = state.currentImages[container]!.selectedImageIds.filter(id => id !== action.payload);
         },
         toggleSelectionMode: (state) => {
             state.selectionModeOn = !state.selectionModeOn;
         },
         selectAllImages: (state) => {
-            state.selectedImageIds = [...state.currentImages.map(img => img.id)];
+            const container = state.activeImageContainer;
+            state.currentImages[container]!.selectedImageIds = state.currentImages[container]!.images.map(img => img.id);
         },
         unselectAllImages: (state) => {
-            state.selectedImageIds = [];
+            const container = state.activeImageContainer;
+            state.currentImages[container]!.selectedImageIds = [];
         },
         deleteSelectedImages: (state) => {
-            state.currentImages = state.currentImages.filter(img => !state.selectedImageIds.includes(img.id));
+            const container = state.activeImageContainer;
+            state.currentImages[container]!.images = state.currentImages[container]!.images.filter(img => !state.currentImages[container]!.selectedImageIds.includes(img.id));
+            state.currentImages[container]!.selectedImageIds = [];
         },
         checkIsAllImagesSelected: (state) => {
-            state.isAllImagesSelected = state.selectedImageIds.length === state.currentImages.length;
-        }
-    }
+            const container = state.activeImageContainer;
+            state.currentImages[container]!.isAllImagesSelected = state.currentImages[container]!.selectedImageIds.length === state.currentImages[container]!.images.length;
+        },
+        setActiveImageContainer: (state, action: PayloadAction<string>) => {
+            state.activeImageContainer = action.payload;
+        },
+    },
 });
 
-export const { initCurrentImages, addImages, selectImage, unselectImage, toggleSelectionMode, selectAllImages, unselectAllImages, deleteSelectedImages, checkIsAllImagesSelected } = imageSlice.actions;
+export const {
+    initCurrentImages,
+    addImages,
+    selectImage,
+    unselectImage,
+    toggleSelectionMode,
+    selectAllImages,
+    unselectAllImages,
+    deleteSelectedImages,
+    checkIsAllImagesSelected,
+    setActiveImageContainer,
+} = imageSlice.actions;
 
 export default imageSlice.reducer;

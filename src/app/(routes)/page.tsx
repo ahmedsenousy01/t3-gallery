@@ -1,11 +1,11 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { getUserImages } from "~/server/queries";
+import { getAllImages } from "~/server/queries";
 import { ImageFeed } from "../_components/imageFeed";
 // TODO: learn about the export const (configurationOptions) like this one
 export const dynamic = "force-dynamic";
 
 async function ImageFeedWrapper() {
-  const initialImages = await getUserImages();
+  const initialImages = await getAllImages();
   return <ImageFeed initialImages={initialImages} />;
 }
 
