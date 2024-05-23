@@ -31,7 +31,7 @@ const useUploadThingInputProps = (...args: Input) => {
   };
 };
 
-function UploadBtnSvg() {
+export function UploadBtnSvg({ onClick }: { onClick?: () => void }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,8 @@ function UploadBtnSvg() {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="h-6 w-6"
+      className="h-6 w-6 cursor-pointer"
+      onClick={onClick}
     >
       <path
         strokeLinecap="round"

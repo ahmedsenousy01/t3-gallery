@@ -48,7 +48,7 @@ export default function RootLayout({
             <body className={`font-sans ${inter.variable} dark`}>
               <div className="grid h-screen grid-rows-[auto,1fr]">
                 <Navbar />
-                <main className="overflow-y-auto">{children}</main>
+                <main id="content" className="overflow-y-auto">{children}</main>
                 {modal}
               </div>
               <div id="modal-root" />

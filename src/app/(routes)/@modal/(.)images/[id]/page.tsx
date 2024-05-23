@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Modal } from "../../../../_components/modal";
+import { RouteInterceptingModal } from "../../../../../components/ui/route-intercepting-modal";
 import { getImageById } from "~/server/queries";
 
 // TODO: redirect("/") doesn't work with intercepted routes (search about why)
@@ -12,7 +12,7 @@ export default async function page({
   const image = await getImageById(ImageId);
 
   return (
-    <Modal>
+    <RouteInterceptingModal>
       <Image
         width={300}
         height={300}
@@ -20,6 +20,6 @@ export default async function page({
         src={image.url}
         alt={image.name}
       />
-    </Modal>
+    </RouteInterceptingModal>
   );
 }

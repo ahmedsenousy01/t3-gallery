@@ -79,3 +79,7 @@ dialog:modal {
   max-width: 100vw;
   max-height: 100vh;
 }
+
+.centered-content {
+  @apply mx-auto w-[95%] max-w-[1280px];
+}
