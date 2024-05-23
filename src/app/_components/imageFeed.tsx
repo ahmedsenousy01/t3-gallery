@@ -10,6 +10,7 @@ import { type Image as ImageType } from "~/server/db/schema";
 import { useAppSelector, useAppDispatch } from "~/lib/redux/hooks";
 import {
   addImages,
+  checkIsAllImagesSelected,
   initCurrentImages,
   selectImage,
   unselectImage,
@@ -56,7 +57,7 @@ export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center gap-5 p-6">
+      <div className="flex flex-wrap justify-center gap-5 py-6">
         {images.map((img) => (
           <div
             key={img.id}
@@ -78,14 +79,20 @@ export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
             {selectionModeOn && (
               <div
                 className="absolute inset-0 z-[1] size-full"
-                onClick={() => dispatch(selectImage(img.id))}
+                onClick={() => {
+                  dispatch(selectImage(img.id));
+                  dispatch(checkIsAllImagesSelected());
+                }}
               />
             )}
             {selectionModeOn &&
               selectedImageIds.find((id) => id === img.id) && (
                 <div
                   className="absolute inset-0 z-[2] flex size-full items-center justify-center bg-blue-600/50 opacity-50"
-                  onClick={() => dispatch(unselectImage(img.id))}
+                  onClick={() => {
+                    dispatch(unselectImage(img.id));
+                    dispatch(checkIsAllImagesSelected());
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

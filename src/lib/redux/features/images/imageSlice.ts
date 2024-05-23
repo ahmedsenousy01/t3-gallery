@@ -1,10 +1,11 @@
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { type Image as ImageType } from '~/server/db/schema';
 
-const initialState: { currentImages: ImageType[], selectedImageIds: string[], selectionModeOn: boolean } = {
+const initialState: { currentImages: ImageType[], selectedImageIds: string[], selectionModeOn: boolean, isAllImagesSelected: boolean } = {
     currentImages: [],
     selectedImageIds: [],
     selectionModeOn: false,
+    isAllImagesSelected: false,
 }
 
 export const imageSlice = createSlice({
@@ -34,10 +35,13 @@ export const imageSlice = createSlice({
         },
         deleteSelectedImages: (state) => {
             state.currentImages = state.currentImages.filter(img => !state.selectedImageIds.includes(img.id));
+        },
+        checkIsAllImagesSelected: (state) => {
+            state.isAllImagesSelected = state.selectedImageIds.length === state.currentImages.length;
         }
     }
 });
 
-export const { initCurrentImages, addImages, selectImage, unselectImage, toggleSelectionMode, selectAllImages, unselectAllImages, deleteSelectedImages } = imageSlice.actions;
+export const { initCurrentImages, addImages, selectImage, unselectImage, toggleSelectionMode, selectAllImages, unselectAllImages, deleteSelectedImages, checkIsAllImagesSelected } = imageSlice.actions;
 
 export default imageSlice.reducer;

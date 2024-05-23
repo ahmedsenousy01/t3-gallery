@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import imageSlice from './features/images/imageSlice'
+import modalSlice from './features/modals/modalSlice'
 
 const rootReducer = combineReducers({
    images: imageSlice,
+   modals: modalSlice,
 })
 
 export const makeStore = () => {

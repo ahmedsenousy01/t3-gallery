@@ -24,8 +24,9 @@ The codebase from Theo's [T3 App Router Tutorial on YouTube](https://github.com/
 ## Advanced Todo
 
 - [x] Fix the page layout for images of different resolutions
+- [x] Add the option to crop images (optimally be 1:1 ratio to solve the aspect ratio issue)
 - [x] "Selecting" images on the gallery page and applying actions to them at once (use client side state management)
-- [ ] "infinite scroll"
+- [x] "infinite scroll"
 - [ ] Folders/albums (add tags to each image)
 - [ ] Redesign the app to look like [Hamed Bahram's photo gallery app](https://www.youtube.com/watch?v=RKszSrtWqjA)
 
