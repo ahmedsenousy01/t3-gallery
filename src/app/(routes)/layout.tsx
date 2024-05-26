@@ -4,13 +4,13 @@ import "~/styles/globals.css";
 import { Inter } from "next/font/google";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
-import { ClerkProvider } from "@clerk/nextjs";
 
 import Navbar from "~/app/_components/navbar";
 import { ourFileRouter } from "~/app/api/uploadthing/core";
 import { Toaster } from "~/components/ui/sonner";
-import { CSPostHogProvider } from "~/components/providers/posthog";
 import ReduxStoreProvider from "~/components/providers/reduxStoreProvider";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "~/server/auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,40 +23,42 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   modal,
 }: {
   children: React.ReactNode;
   modal: React.ReactNode;
 }) {
+  const session = await auth();
+
   return (
-    <ClerkProvider>
-      <ReduxStoreProvider>
-        <CSPostHogProvider>
-          {/* TODO: look up how ssr works and why this is necessary */}
-          <NextSSRPlugin
-            /**
-             * The `extractRouterConfig` will extract **only** the route configs
-             * from the router to prevent additional information from being
-             * leaked to the client. The data passed to the client is the same
-             * as if you were to fetch `/api/uploadthing` directly.
-             */
-            routerConfig={extractRouterConfig(ourFileRouter)}
-          />
-          <html lang="en">
-            <body className={`font-sans ${inter.variable} dark`}>
-              <div className="grid h-screen grid-rows-[auto,1fr]">
-                <Navbar />
-                <main id="content" className="overflow-y-auto">{children}</main>
-                {modal}
-              </div>
-              <div id="modal-root" />
-              <Toaster />
-            </body>
-          </html>
-        </CSPostHogProvider>
-      </ReduxStoreProvider>
-    </ClerkProvider>
+    <ReduxStoreProvider>
+      <SessionProvider session={session}>
+        {/* TODO: look up how ssr works and why this is necessary */}
+        <NextSSRPlugin
+          /**
+           * The `extractRouterConfig` will extract **only** the route configs
+           * from the router to prevent additional information from being
+           * leaked to the client. The data passed to the client is the same
+           * as if you were to fetch `/api/uploadthing` directly.
+           */
+          routerConfig={extractRouterConfig(ourFileRouter)}
+        />
+        <html lang="en">
+          <body className={`font-sans ${inter.variable} dark`}>
+            <div className="grid h-screen grid-rows-[auto,1fr]">
+              <Navbar />
+              <main id="content" className="overflow-y-auto">
+                {children}
+              </main>
+              {modal}
+            </div>
+            <div id="modal-root" />
+            <Toaster />
+          </body>
+        </html>
+      </SessionProvider>
+    </ReduxStoreProvider>
   );
 }

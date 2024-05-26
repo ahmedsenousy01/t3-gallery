@@ -1,14 +1,32 @@
+import { auth } from "~/server/auth";
+
 import {
-    clerkMiddleware,
-    createRouteMatcher
-} from "@clerk/nextjs/server"
+  apiAuthPrefix,
+  authRoutes,
+  publicRoutes,
+  DEFAULT_REDIRECT_ROUTE,
+} from "./server/auth-config/routes";
 
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"])
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
 
-export default clerkMiddleware((auth, request) => {
-    if (isProtectedRoute(request)) auth().protect()
-})
+  const isApiAuthRoute = req.nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuthRoute) return;
+
+  if (isAuthRoute) {
+    if (isLoggedIn)
+      return Response.redirect(new URL(DEFAULT_REDIRECT_ROUTE, nextUrl));
+    return;
+  }
+
+  if (!isLoggedIn && !isPublicRoute)
+    return Response.redirect(new URL("auth/login", nextUrl));
+});
 
 export const config = {
-    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
-}
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+};
