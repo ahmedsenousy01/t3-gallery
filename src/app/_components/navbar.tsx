@@ -11,11 +11,7 @@ import { SelectAllIcon } from "~/app/_components/select-all-icon";
 import { CloseButtonIcon } from "~/app/_components/close-button-icon";
 import { UnSelectAllIcon } from "./un-select-all-icon";
 import { Modal } from "~/components/ui/normal-modal";
-import {
-  closeUploadImageModal,
-  openUploadImageModal,
-  closeAddImageToAlbumModal,
-} from "~/lib/redux/features/modals/modalSlice";
+import { closeModal, openModal } from "~/lib/redux/features/modals/modalSlice";
 import { useEffect, useState } from "react";
 import ImageCropper from "./upload-image-modal";
 import { FolderIcon } from "./folder-icon";
@@ -63,7 +59,7 @@ function AddImagesToAlbum() {
                 selectedImagesIds ?? []
               );
               if (res) {
-                dispatch(closeAddImageToAlbumModal());
+                dispatch(closeModal("addImageToAlbum"));
                 dispatch(unselectAllImages());
                 dispatch(toggleSelectionMode());
               }
@@ -94,10 +90,10 @@ export default function Navbar() {
       state.images.currentImages[activeImageContainer]?.isAllImagesSelected
   );
   const uploadModalIsOpen = useAppSelector(
-    (state) => state.modals.uploadImageModal.isOpen
+    (state) => state.modals.uploadImage!.isOpen
   );
   const addImageToAlbumModalIsOpen = useAppSelector(
-    (state) => state.modals.addImageToAlbumModal.isOpen
+    (state) => state.modals.addImageToAlbum!.isOpen
   );
 
   useEffect(() => {
@@ -138,7 +134,7 @@ export default function Navbar() {
                     <>
                       <SelectImagesIcon />
                       <UploadBtnSvg
-                        onClick={() => dispatch(openUploadImageModal())}
+                        onClick={() => dispatch(openModal("uploadImage"))}
                       />
                       <Link href={"/albums"}>
                         <FolderIcon />
@@ -166,17 +162,20 @@ export default function Navbar() {
       </nav>
       {isClient && (
         <>
-          <Modal isOpen={uploadModalIsOpen} closeModal={closeUploadImageModal}>
+          <Modal
+            isOpen={uploadModalIsOpen}
+            closeModal={() => closeModal("uploadImage")}
+          >
             <div className="bg-white p-6">
               <ImageCropper
-                closeModal={() => dispatch(closeUploadImageModal())}
+                closeModal={() => dispatch(closeModal("uploadImage"))}
                 onCropComplete={(dataUrl) => console.log(dataUrl)}
               />
             </div>
           </Modal>
           <Modal
             isOpen={addImageToAlbumModalIsOpen}
-            closeModal={closeAddImageToAlbumModal}
+            closeModal={() => closeModal("addImageToAlbum")}
           >
             <AddImagesToAlbum />
           </Modal>

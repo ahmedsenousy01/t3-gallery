@@ -6,7 +6,7 @@ import { useAppDispatch } from "~/lib/redux/hooks";
 
 export function Modal(props: {
   isOpen: boolean;
-  closeModal: () => { type: string; payload: undefined };
+  closeModal: () => { type: string; payload: string };
   children: React.ReactNode;
 }) {
   const dispatch = useAppDispatch();
