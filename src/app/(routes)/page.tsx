@@ -1,7 +1,8 @@
 import { auth } from "~/server/auth";
 import { getAllImages } from "~/server/queries";
 import { ImageFeed } from "../_components/imageFeed";
-import { SignInButton } from "~/components/auth/SignInButton";
+import { Button } from "~/components/ui/button";
+import { serverSideSignIn } from "~/server/auth-config/actions";
 // TODO: learn about the export const (configurationOptions) like this one
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,16 @@ export default async function HomePage() {
           Welcome to the Gallery!
         </h1>
         <p className="text-lg">Please sign in to view the gallery.</p>
-        <SignInButton />
+        <form
+          action={async () => {
+            "use server";
+            await serverSideSignIn();
+          }}
+        >
+          <Button variant="default" type="submit">
+            Sign in
+          </Button>
+        </form>
       </div>
     );
 
