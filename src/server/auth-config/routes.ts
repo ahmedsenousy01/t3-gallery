@@ -3,14 +3,20 @@
  * without requiring authentication.
  * @type {string[]}
  * */
-export const publicRoutes = ["/"];
+export const publicRoutes = ["/", "/refresh", "/api/uploadthing"];
 
 /**
  * An array of routes used for authentication.
  * these routes will redirect logged in users to the home page.
  * @type {string[]}
  * */
-export const authRoutes = ["/auth/login", "/auth/register"];
+export const authRoutes = [
+  "/auth/signin",
+  "/auth/signup",
+  "/auth/signout",
+  "/auth/login",
+  "/auth/register",
+];
 
 /**
  * The prefix for API authentication routes.
@@ -19,4 +25,4 @@ export const authRoutes = ["/auth/login", "/auth/register"];
  * */
 export const apiAuthPrefix = "/api/auth";
 
-export const DEFAULT_REDIRECT_ROUTE = "/";
+export const DEFAULT_REDIRECT_ROUTE = "/home";

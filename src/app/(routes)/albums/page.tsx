@@ -1,7 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "~/server/auth";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
 import { nanoid } from "~/lib/utils";
 import { db } from "~/server/db";
 import { albums } from "~/server/db/schema";
@@ -50,12 +49,13 @@ export default async function page() {
         <form
           action={async () => {
             "use server";
-            const user = auth();
-            if (!user.userId) throw new Error("Unauthorized!");
+            const user = await getCurrentUser();
+            if (!user) throw new Error("Unauthorized!");
+
             await db.insert(albums).values({
               id: nanoid(),
               name: "New Album",
-              userId: user.userId,
+              userId: user.id,
             });
             revalidatePath("/albums");
           }}

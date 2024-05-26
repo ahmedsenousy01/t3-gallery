@@ -1,7 +1,7 @@
 "use client";
 
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { UploadBtnSvg } from "~/app/_components/uploadBtn";
 import { DeleteButton } from "./deleteImagesBtn";
@@ -26,18 +26,23 @@ import {
   toggleSelectionMode,
   unselectAllImages,
 } from "~/lib/redux/features/images/imageSlice";
+import { useCurrentUser } from "~/hooks/use-current-user";
+import {
+  serverSideSignIn,
+  serverSideSignOut,
+} from "~/server/auth-config/actions";
 
 function AddImagesToAlbum() {
+  const [albums, setAlbums] = useState<Album[]>([]);
+
   const dispatch = useAppDispatch();
   const activeImageContainer = useAppSelector(
-    (state) => state.images.activeImageContainer,
+    (state) => state.images.activeImageContainer
   );
   const selectedImagesIds = useAppSelector(
     (state) =>
-      state.images.currentImages[activeImageContainer]?.selectedImageIds,
+      state.images.currentImages[activeImageContainer]?.selectedImageIds
   );
-
-  const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
     fetchUserAlbums()
@@ -55,7 +60,7 @@ function AddImagesToAlbum() {
             onClick={async () => {
               const res = await addImagesToAlbum(
                 album.id,
-                selectedImagesIds ?? [],
+                selectedImagesIds ?? []
               );
               if (res) {
                 dispatch(closeAddImageToAlbumModal());
@@ -73,24 +78,26 @@ function AddImagesToAlbum() {
 }
 
 export default function Navbar() {
+  const user = useCurrentUser();
+  const pathname = usePathname();
   const [isClient, setIsClient] = useState(false);
   const dispatch = useAppDispatch();
 
   const activeImageContainer = useAppSelector(
-    (state) => state.images.activeImageContainer,
+    (state) => state.images.activeImageContainer
   );
   const selectionModeOn = useAppSelector(
-    (state) => state.images.selectionModeOn,
+    (state) => state.images.selectionModeOn
   );
   const isAllImagesSelected = useAppSelector(
     (state) =>
-      state.images.currentImages[activeImageContainer]?.isAllImagesSelected,
+      state.images.currentImages[activeImageContainer]?.isAllImagesSelected
   );
   const uploadModalIsOpen = useAppSelector(
-    (state) => state.modals.uploadImageModal.isOpen,
+    (state) => state.modals.uploadImageModal.isOpen
   );
   const addImageToAlbumModalIsOpen = useAppSelector(
-    (state) => state.modals.addImageToAlbumModal.isOpen,
+    (state) => state.modals.addImageToAlbumModal.isOpen
   );
 
   useEffect(() => {
@@ -114,34 +121,45 @@ export default function Navbar() {
               )}
             </div>
             <div className="flex items-center gap-4">
-              <SignedOut>
-                <SignInButton />
-              </SignedOut>
-              <SignedIn>
-                {selectionModeOn ? (
-                  <>
-                    <FolderPlusIcon />
-                    <DeleteButton />
-                    {isAllImagesSelected ? (
-                      <UnSelectAllIcon />
-                    ) : (
-                      <SelectAllIcon />
-                    )}
-                    <CloseButtonIcon />
-                  </>
-                ) : (
-                  <>
-                    <SelectImagesIcon />
-                    <UploadBtnSvg
-                      onClick={() => dispatch(openUploadImageModal())}
-                    />
-                    <Link href={"/albums"}>
-                      <FolderIcon />
-                    </Link>
-                    <UserButton />
-                  </>
-                )}
-              </SignedIn>
+              {selectionModeOn && user ? (
+                <>
+                  <FolderPlusIcon />
+                  <DeleteButton />
+                  {isAllImagesSelected ? (
+                    <UnSelectAllIcon />
+                  ) : (
+                    <SelectAllIcon />
+                  )}
+                  <CloseButtonIcon />
+                </>
+              ) : (
+                <>
+                  {!!user ? (
+                    <>
+                      <SelectImagesIcon />
+                      <UploadBtnSvg
+                        onClick={() => dispatch(openUploadImageModal())}
+                      />
+                      <Link href={"/albums"}>
+                        <FolderIcon />
+                      </Link>
+                      <button
+                        onClick={async () => await serverSideSignOut(pathname)}
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={async () => await serverSideSignIn()}>
+                        Sign in
+                      </button>
+                    </>
+                  )}
+                  {/* TODO: add user button and a profile page */}
+                  {/* <UserButton /> */}
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
   varchar,
   primaryKey,
   integer,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 
 import type { AdapterAccountType } from "next-auth/adapters";
@@ -22,6 +23,8 @@ import type { AdapterAccountType } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `t3-gallery_${name}`);
 
+export const userRoleEnum = pgEnum("user_role", ["admin", "user"]);
+
 export const users = createTable("user", {
   id: varchar("id")
     .primaryKey()
@@ -29,6 +32,7 @@ export const users = createTable("user", {
   name: varchar("name"),
   email: varchar("email").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
+  role: userRoleEnum("user_role").notNull().default("user"),
   image: varchar("image"),
 });
 
@@ -93,10 +97,10 @@ export const imageAlbums = createTable("image_albums", {
   id: char("id", { length: 20 }).primaryKey(),
   albumId: char("album_id", { length: 20 })
     .notNull()
-    .references(() => albums.id),
+    .references(() => albums.id, { onDelete: "cascade" }),
   imageId: char("image_id", { length: 20 })
     .notNull()
-    .references(() => images.id),
+    .references(() => images.id, { onDelete: "cascade" }),
 });
 
 export type Image = InferSelectModel<typeof images>;

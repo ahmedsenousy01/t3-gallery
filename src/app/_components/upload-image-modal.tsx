@@ -11,9 +11,9 @@ import "react-image-crop/dist/ReactCrop.css";
 import setCanvasPreview from "./setCanvasPreview";
 import { useUploadThing } from "~/utils/uploadthing";
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
+import { hardRefresh } from "~/lib/utils";
 
 function LoadingSpinnerSvg() {
   return (
@@ -52,11 +52,9 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   circularCrop,
 }) => {
   const router = useRouter();
-  const posthog = usePostHog();
 
   const $ut = useUploadThing("imageUploader", {
     onUploadBegin: () => {
-      posthog.capture("upload_begin");
       toast(
         <div className="flex items-center gap-2">
           <LoadingSpinnerSvg />
@@ -65,7 +63,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
         {
           duration: 10000,
           id: "upload-begin",
-        },
+        }
       );
     },
     onClientUploadComplete: () => {
@@ -116,7 +114,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
       },
       ASPECT_RATIO,
       width,
-      height,
+      height
     );
     const centeredCrop = centerCrop(crop, width, height);
     setCrop(centeredCrop);
@@ -124,7 +122,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
 
   const dataURLToFile = async (
     dataUrl: string,
-    fileName: string,
+    fileName: string
   ): Promise<File> => {
     const response = await fetch(dataUrl);
     const blob = await response.blob();
@@ -176,14 +174,15 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
                 convertToPixelCrop(
                   crop,
                   imgRef.current.width,
-                  imgRef.current.height,
-                ),
+                  imgRef.current.height
+                )
               );
               const dataUrl = previewCanvasRef.current.toDataURL();
               onCropComplete(dataUrl);
               closeModal();
               const file = await dataURLToFile(dataUrl, `${nanoid()}.jpg`);
-              await $ut.startUpload([file]);
+              const res = await $ut.startUpload([file]);
+              res && res?.length > 0 && hardRefresh();
             }}
           >
             Upload
