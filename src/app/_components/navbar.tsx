@@ -23,10 +23,8 @@ import {
   unselectAllImages,
 } from "~/lib/redux/features/images/imageSlice";
 import { useCurrentUser } from "~/hooks/use-current-user";
-import {
-  serverSideSignIn,
-  serverSideSignOut,
-} from "~/server/auth-config/actions";
+import { initiateSignIn, serverSideSignOut } from "~/server/auth/actions";
+import { UserButton } from "./user-button";
 
 function AddImagesToAlbum() {
   const [albums, setAlbums] = useState<Album[]>([]);
@@ -139,15 +137,11 @@ export default function Navbar() {
                       <Link href={"/albums"}>
                         <FolderIcon />
                       </Link>
-                      <button
-                        onClick={async () => await serverSideSignOut(pathname)}
-                      >
-                        Sign Out
-                      </button>
+                      <UserButton />
                     </>
                   ) : (
                     <>
-                      <button onClick={async () => await serverSideSignIn()}>
+                      <button onClick={async () => await initiateSignIn()}>
                         Sign in
                       </button>
                     </>

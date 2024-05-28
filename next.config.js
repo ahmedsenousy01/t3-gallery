@@ -13,6 +13,9 @@ const coreConfig = {
       {
         hostname: "utfs.io",
       },
+      {
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
   typescript: {
