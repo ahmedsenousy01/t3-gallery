@@ -10,7 +10,7 @@ import { ourFileRouter } from "~/app/api/uploadthing/core";
 import { Toaster } from "~/components/ui/sonner";
 import ReduxStoreProvider from "~/components/providers/reduxStoreProvider";
 import { SessionProvider } from "next-auth/react";
-import { auth } from "~/server/auth";
+import { auth } from "~/server/auth/core";
 
 const inter = Inter({
   subsets: ["latin"],

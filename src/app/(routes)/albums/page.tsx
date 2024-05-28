@@ -1,4 +1,4 @@
-import { getCurrentUser } from "~/server/auth";
+import { getCurrentUser } from "~/server/auth/core";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { nanoid } from "~/lib/utils";

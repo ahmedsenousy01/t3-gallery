@@ -1,11 +1,11 @@
-import "server-only";
 import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 import { db } from "~/server/db";
 import { accounts, users } from "~/server/db/schema";
-import authConfig from "./auth-config/config";
+import authConfig from "./config";
 import { env } from "~/env";
+import { getUserById } from "../queries";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
@@ -13,9 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const { sub } = token;
       if (!sub) return token;
 
-      const currentUser = await db.query.users.findFirst({
-        where: (model, { eq }) => eq(model.id, sub),
-      });
+      const currentUser = await getUserById(sub);
       if (!currentUser) return token;
 
       token.role = currentUser.role;
@@ -36,6 +34,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   }),
   session: { strategy: "jwt" },
   secret: env.AUTH_SECRET,
+  // pages: {
+  //   signIn: '/auth/login',
+  //   signOut: '/auth/logout',
+  //   error: '/auth/error',
+  //   verifyRequest: '/auth/verify-request',
+  //   newUser: '/auth/new-user'
+  // },
   ...authConfig,
 });
 

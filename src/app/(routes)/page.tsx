@@ -1,8 +1,8 @@
-import { auth } from "~/server/auth";
+import { auth } from "~/server/auth/core";
 import { getAllImages } from "~/server/queries";
 import { ImageFeed } from "../_components/imageFeed";
 import { Button } from "~/components/ui/button";
-import { serverSideSignIn } from "~/server/auth-config/actions";
+import { initiateSignIn } from "~/server/auth/actions";
 // TODO: learn about the export const (configurationOptions) like this one
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export default async function HomePage() {
         <form
           action={async () => {
             "use server";
-            await serverSideSignIn();
+            await initiateSignIn();
           }}
         >
           <Button variant="default" type="submit">

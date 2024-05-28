@@ -29,8 +29,11 @@ export const users = createTable("user", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
   name: varchar("name"),
   email: varchar("email").notNull(),
+  password: varchar("password"),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   role: userRoleEnum("user_role").notNull().default("user"),
   image: varchar("image"),

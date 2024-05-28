@@ -1,11 +1,11 @@
-import { auth } from "~/server/auth";
+import { auth } from "~/server/auth/core";
 
 import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
   DEFAULT_REDIRECT_ROUTE,
-} from "./server/auth-config/routes";
+} from "./server/auth/routes";
 
 export default auth((req) => {
   const { nextUrl } = req;

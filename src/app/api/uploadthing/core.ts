@@ -1,7 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import { nanoid } from "~/lib/utils";
-import { auth } from "~/server/auth";
+import { auth } from "~/server/auth/core";
 import { db } from "~/server/db";
 import { images } from "~/server/db/schema";
 
