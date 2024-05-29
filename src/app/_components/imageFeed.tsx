@@ -16,17 +16,18 @@ import {
   setActiveImageContainer,
   unselectImage,
 } from "~/lib/redux/features/images/imageSlice";
+import { LoadingSpinner } from "~/components/ui/loading-spinner";
 
 export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
   const dispatch = useAppDispatch();
   const images = useAppSelector(
-    (state) => state.images.currentImages.mainFeed?.images,
+    (state) => state.images.currentImages.mainFeed?.images
   );
   const selectionModeOn = useAppSelector(
-    (state) => state.images.selectionModeOn,
+    (state) => state.images.selectionModeOn
   );
   const selectedImageIds = useAppSelector(
-    (state) => state.images.currentImages.mainFeed?.selectedImageIds,
+    (state) => state.images.currentImages.mainFeed?.selectedImageIds
   );
 
   useEffect(() => {
@@ -105,7 +106,7 @@ export function ImageFeed({ initialImages }: { initialImages: ImageType[] }) {
       </div>
       {moreImagesExist && (
         <div className="flex items-center justify-center" ref={ref}>
-          <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-white/50 border-b-white/50 border-t-white/50" />
+          <LoadingSpinner />
         </div>
       )}
     </>

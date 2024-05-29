@@ -6,7 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
@@ -42,7 +41,7 @@ export function UserButton() {
         <DropdownMenuItem className="hover:bg-slate-800">
           <button
             className="h-full w-full text-start"
-            onClick={async () => await serverSideSignOut(pathname)}
+            onClick={async () => await serverSideSignOut(pathname, "refresh")}
           >
             Logout
           </button>

@@ -8,7 +8,7 @@ import ReactCrop, {
   type Crop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import setCanvasPreview from "../../components/ui/image-cropper/setCanvasPreview";
+import setCanvasPreview from "~/components/ui/image-cropper/setCanvasPreview";
 
 interface ImageCropperProps {
   closeModal: () => void;
