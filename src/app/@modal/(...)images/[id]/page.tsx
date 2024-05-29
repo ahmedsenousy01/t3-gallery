@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { RouteInterceptingModal } from "../../../../../components/ui/route-intercepting-modal";
+import { RouteInterceptingModal } from "../../../../components/ui/modals/route-intercepting-modal";
 import { getImageById } from "~/server/queries";
 
 // TODO: redirect("/") doesn't work with intercepted routes (search about why)
