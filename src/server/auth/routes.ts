@@ -11,9 +11,6 @@ export const publicRoutes = ["/", "/refresh", "/api/uploadthing"];
  * @type {string[]}
  * */
 export const authRoutes = [
-  "/auth/signin",
-  "/auth/signup",
-  "/auth/signout",
   "/auth/login",
   "/auth/register",
 ];

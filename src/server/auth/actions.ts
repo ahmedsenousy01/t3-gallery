@@ -25,9 +25,13 @@ export async function initiateSignIn() {
   await signIn();
 }
 
-export async function credentialsSignIn(
-  credentials: z.infer<typeof loginSchema>
-) {
+export async function credentialsSignIn({
+  credentials,
+  redirectTo,
+}: {
+  credentials: z.infer<typeof loginSchema>;
+  redirectTo?: string;
+}) {
   const validatedFields = loginSchema.safeParse(credentials);
   if (!validatedFields.success) return null;
 
@@ -36,7 +40,7 @@ export async function credentialsSignIn(
     await signIn("credentials", {
       email,
       password,
-      redirectTo: DEFAULT_REDIRECT_ROUTE,
+      redirectTo,
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -72,8 +76,14 @@ export async function providerSignIn(
   }
 }
 
-export async function serverSideSignOut(destination?: string) {
+export async function serverSideSignOut(
+  destination?: string,
+  hardRefresh: "refresh" | "redirect" = "redirect"
+) {
   await signOut({
-    redirectTo: `/refresh?destination=${destination ?? DEFAULT_REDIRECT_ROUTE}`,
+    redirectTo:
+      hardRefresh === "refresh"
+        ? `/refresh?callbackUrl=${destination ?? DEFAULT_REDIRECT_ROUTE}`
+        : undefined,
   });
 }

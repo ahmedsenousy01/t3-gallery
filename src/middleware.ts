@@ -27,7 +27,7 @@ export default auth((req) => {
   if (!isLoggedIn && !isPublicRoute) {
     return Response.redirect(
       new URL(
-        `/api/auth/signin?callbackUrl=${nextUrl.pathname ?? DEFAULT_REDIRECT_ROUTE}`,
+        `/auth/login?callbackUrl=${nextUrl.pathname ?? DEFAULT_REDIRECT_ROUTE}`,
         nextUrl
       )
     );

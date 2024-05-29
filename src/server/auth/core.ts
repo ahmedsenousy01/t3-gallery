@@ -34,13 +34,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   }),
   session: { strategy: "jwt" },
   secret: env.AUTH_SECRET,
-  // pages: {
-  //   signIn: '/auth/login',
-  //   signOut: '/auth/logout',
-  //   error: '/auth/error',
-  //   verifyRequest: '/auth/verify-request',
-  //   newUser: '/auth/new-user'
-  // },
+  pages: {
+    signIn: "/auth/login",
+    newUser: "/auth/register",
+    signOut: "/auth/logout",
+    //   error: '/auth/error',
+    //   verifyRequest: '/auth/verify-request',
+  },
   ...authConfig,
 });
 
