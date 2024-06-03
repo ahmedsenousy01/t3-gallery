@@ -58,9 +58,7 @@ export async function credentialsSignIn({
   }
 }
 
-export async function providerSignIn(
-  provider: "google" | "github" | "apple" | "facebook"
-) {
+export async function providerSignIn(provider: "google" | "github") {
   try {
     await signIn(provider);
   } catch (error) {

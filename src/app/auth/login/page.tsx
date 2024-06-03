@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type * as z from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -31,6 +31,24 @@ import { loginSchema } from "~/schemas";
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    if (oauthError) {
+      switch (oauthError) {
+        case "OAuthAccountNotLinked":
+          setApiError(
+            "This account is already registered with a different provider"
+          );
+          break;
+        case "OauthInvalidToken":
+          setApiError("Invalid token");
+          break;
+        default:
+          setApiError("Unknown error");
+      }
+    }
+  }, [searchParams]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -108,13 +126,22 @@ export default function LoginPage() {
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={async () => await providerSignIn("google")}
-                >
-                  Login with Google
-                </Button>
+                <div className="flex w-full justify-between">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => await providerSignIn("google")}
+                  >
+                    Login with Google
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => await providerSignIn("github")}
+                  >
+                    Login with Github
+                  </Button>
+                </div>
               </div>
               <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}

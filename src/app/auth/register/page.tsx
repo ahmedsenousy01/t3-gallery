@@ -134,14 +134,22 @@ export default function RegistrationPage() {
                 <Button className="w-full" type="submit">
                   Create an account
                 </Button>
-
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => providerSignIn("google")}
-                >
-                  Sign up with Google
-                </Button>
+                <div className="flex w-full justify-between">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => await providerSignIn("google")}
+                  >
+                    Sign up with Google
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => await providerSignIn("github")}
+                  >
+                    Sign up with Github
+                  </Button>
+                </div>
               </div>
               <div className="mt-4 text-center text-sm">
                 Already have an account?

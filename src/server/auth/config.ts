@@ -3,6 +3,7 @@ import { env } from "~/env";
 
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import Github from "next-auth/providers/github";
 import type { NextAuthConfig } from "next-auth";
 
 import { getUserByEmail } from "~/server/queries";
@@ -31,6 +32,10 @@ export default {
     Google({
       clientId: env.AUTH_GOOGLE_ID,
       clientSecret: env.AUTH_GOOGLE_SECRET,
+    }),
+    Github({
+      clientId: env.AUTH_GITHUB_ID,
+      clientSecret: env.AUTH_GITHUB_SECRET,
     }),
   ],
 } satisfies NextAuthConfig;
