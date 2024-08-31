@@ -2,11 +2,10 @@ import "server-only";
 
 import { getCurrentUser } from "~/server/auth/core";
 import { db } from "~/server/db";
-import { imageAlbums, images, users } from "~/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { comments, likes, posts, users } from "~/server/db/schema";
+import { and, count, eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
-import { nanoid } from "~/lib/utils";
 import { type signUpSchema } from "~/schemas";
 import { type z } from "zod";
 
@@ -41,19 +40,19 @@ export async function createUser(user: z.infer<typeof signUpSchema>) {
   });
 }
 
-export async function getAllImages(page = 1, limit = 5) {
-  return await db.query.images.findMany({
+export async function getAllPosts(page = 1, limit = 5) {
+  return await db.query.posts.findMany({
     orderBy: (model, { desc }) => desc(model.id),
     offset: (page - 1) * limit,
     limit,
   });
 }
 
-export async function getRecommendedImages(page = 1, limit = 5) {
+export async function getRecommendedPosts(page = 1, limit = 5) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized!");
 
-  return await db.query.images.findMany({
+  return await db.query.posts.findMany({
     where: (model, { eq }) => eq(model.userId, user?.id ?? ""),
     orderBy: (model, { desc }) => desc(model.id),
     offset: (page - 1) * limit,
@@ -61,37 +60,59 @@ export async function getRecommendedImages(page = 1, limit = 5) {
   });
 }
 
-export async function getUserImages() {
+export async function getUserPosts() {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized!");
 
-  return await db.query.images.findMany({
+  return await db.query.posts.findMany({
     where: (model, { eq }) => eq(model.userId, user?.id ?? ""),
     orderBy: (model, { desc }) => desc(model.id),
   });
 }
 
-export async function getImageById(id: string) {
+export async function getPostById(id: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized!");
 
-  const image = await db.query.images.findFirst({
+  const post = await db.query.posts.findFirst({
     where: (model, { eq }) => eq(model.id, id),
   });
-  if (!image) throw new Error("Image not found!");
+  if (!post) throw new Error("Post not found!");
 
   // if (image.userId !== user?.id ?? "") throw new Error("Unauthorized!");
 
-  return image;
+  return post;
 }
 
-export async function deleteImageById(id: string) {
+export async function getPostsRecommendedPostsWithOwners(page = 1, limit = 10) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized!");
+
+  return await db
+    .select({
+      id: posts.id,
+      caption: posts.caption,
+      imageUrl: posts.imageUrl,
+      createdAt: posts.createdAt,
+      user: {
+        id: users.id,
+        name: users.name,
+        image: users.image,
+      },
+    })
+    .from(posts)
+    .innerJoin(users, eq(posts.userId, users.id))
+    .limit(limit)
+    .offset((page - 1) * limit);
+}
+
+export async function deletePostById(id: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized!");
 
   await db
-    .delete(images)
-    .where(and(eq(images.id, id), eq(images.userId, user?.id ?? "")));
+    .delete(posts)
+    .where(and(eq(posts.id, id), eq(posts.userId, user?.id ?? "")));
 
   return true;
 }
@@ -101,73 +122,12 @@ export async function batchDelete(ids: string[]) {
   if (!user) throw new Error("Unauthorized!");
 
   for (const id of ids) {
-    const image = (await db.query.images.findFirst({
+    const post = (await db.query.posts.findFirst({
       where: (model) => eq(model.id, id),
     }))!;
-    if (image.userId !== user?.id) throw new Error("Unauthorized!");
+    if (post.userId !== user?.id) throw new Error("Unauthorized!");
 
-    await db.delete(imageAlbums).where(eq(imageAlbums.imageId, id));
-    await db
-      .delete(images)
-      .where(and(eq(images.id, id), eq(images.userId, user?.id)));
-  }
-
-  return true;
-}
-
-export async function getUserAlbums() {
-  const user = await getCurrentUser();
-  if (!user) throw new Error("Unauthorized!");
-
-  return await db.query.albums.findMany({
-    where: (model, { eq }) => eq(model.userId, user?.id ?? ""),
-    orderBy: (model, { desc }) => desc(model.id),
-  });
-}
-
-export async function getAlbumById(id: string) {
-  const user = await getCurrentUser();
-  if (!user) throw new Error("Unauthorized!");
-
-  const album = await db.query.albums.findFirst({
-    where: (model, { eq }) => eq(model.id, id),
-  });
-
-  if (!album) throw new Error("Album not found!");
-  if (album.userId !== user?.id ?? "") throw new Error("Unauthorized!");
-
-  return album;
-}
-
-export async function getAlbumImages(albumId: string) {
-  await getAlbumById(albumId);
-
-  const imageIds = (
-    await db.query.imageAlbums.findMany({
-      where: (model, { eq }) => eq(model.albumId, albumId),
-      orderBy: (model, { desc }) => desc(model.id),
-    })
-  ).map((i) => i.imageId);
-
-  return await db.query.images.findMany({
-    where: (model, { inArray }) =>
-      inArray(model.id, imageIds.length > 0 ? imageIds : ["empty"]), // inArray doesn't work with empty array
-  });
-}
-
-export async function batchAddImagesToAlbum(
-  albumId: string,
-  imageIds: string[]
-) {
-  const user = await getCurrentUser();
-  if (!user) throw new Error("Unauthorized!");
-
-  for (const id of imageIds) {
-    await db.insert(imageAlbums).values({
-      id: nanoid(),
-      albumId,
-      imageId: id,
-    });
+    await db.delete(posts).where(eq(posts.id, id));
   }
 
   return true;

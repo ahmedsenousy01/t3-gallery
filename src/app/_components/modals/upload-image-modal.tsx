@@ -1,7 +1,7 @@
 import { Modal } from "~/components/ui/modals/normal-modal";
 import { closeModal } from "~/lib/redux/features/modals/modalSlice";
 import { useAppDispatch, useAppSelector } from "~/lib/redux/hooks";
-import ImageCropper from "~/app/_components/upload-image-modal";
+import ImageCropper from "~/components/ui/image-cropper";
 import { useUploadThing } from "~/utils/uploadthing";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

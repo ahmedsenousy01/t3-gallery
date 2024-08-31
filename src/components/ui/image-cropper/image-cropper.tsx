@@ -22,7 +22,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   closeModal,
   onCropComplete,
   circularCrop,
-  aspectRatio = 1,
+  aspectRatio,
   minimumDimension = 150,
 }) => {
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -67,7 +67,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
         unit: "%",
         width: cropWidthInPercent,
       },
-      aspectRatio,
+      aspectRatio ?? 1,
       width,
       height
     );

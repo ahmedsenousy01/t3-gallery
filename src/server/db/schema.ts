@@ -1,10 +1,6 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
-
 import { type InferSelectModel, sql } from "drizzle-orm";
 import {
   char,
-  index,
   pgTableCreator,
   timestamp,
   varchar,
@@ -14,13 +10,8 @@ import {
 } from "drizzle-orm/pg-core";
 
 import type { AdapterAccountType } from "next-auth/adapters";
+import { nanoid } from "~/lib/utils";
 
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
 export const createTable = pgTableCreator((name) => `t3-gallery_${name}`);
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "user"]);
@@ -63,51 +54,95 @@ export const accounts = createTable(
   })
 );
 
-export const images = createTable(
-  "image",
+export const followers = createTable(
+  "follower",
   {
-    id: char("id", { length: 20 }).primaryKey(),
-    name: varchar("name", { length: 256 }).notNull(),
-    url: varchar("url", { length: 1024 }).notNull(),
-    userId: varchar("userId")
+    followerId: varchar("follower_id")
+      .notNull()
+      .references(() => users.id),
+    userId: varchar("user_id")
+      .notNull()
+      .references(() => users.id),
+  },
+  (follower) => ({
+    compoundKey: primaryKey({
+      columns: [follower.followerId, follower.userId],
+    }),
+  })
+);
+
+export const posts = createTable("post", {
+  id: char("id", { length: 20 })
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  imageUrl: varchar("image_url", { length: 1024 }).notNull(),
+  caption: varchar("post_caption", { length: 1024 }).notNull(),
+  userId: varchar("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt"),
+});
+
+export const likes = createTable(
+  "like",
+  {
+    userId: varchar("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    postId: char("post_id", { length: 20 })
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updatedAt"),
   },
-  (table) => ({
-    nameIndex: index("image_name_idx").on(table.name),
+  (like) => ({
+    compoundKey: primaryKey({
+      columns: [like.userId, like.postId],
+    }),
   })
 );
 
-export const albums = createTable(
-  "albums",
+export const comments = createTable(
+  "comment",
   {
-    id: char("id", { length: 20 }).primaryKey(),
-    name: varchar("name", { length: 256 }).notNull(),
-    userId: varchar("userId")
+    postId: char("post_id", { length: 20 })
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    userId: varchar("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    comment: varchar("comment"),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
   },
-  (table) => ({
-    nameIndex: index("album_name_idx").on(table.name),
+  (comment) => ({
+    compoundKey: primaryKey({
+      columns: [comment.postId, comment.userId],
+    }),
   })
 );
 
-export const imageAlbums = createTable("image_albums", {
-  id: char("id", { length: 20 }).primaryKey(),
-  albumId: char("album_id", { length: 20 })
-    .notNull()
-    .references(() => albums.id, { onDelete: "cascade" }),
-  imageId: char("image_id", { length: 20 })
-    .notNull()
-    .references(() => images.id, { onDelete: "cascade" }),
-});
-
-export type Image = InferSelectModel<typeof images>;
-export type Album = InferSelectModel<typeof albums>;
-export type ImageAlbum = InferSelectModel<typeof imageAlbums>;
 export type User = InferSelectModel<typeof users>;
 export type Account = InferSelectModel<typeof accounts>;
+export type Post = InferSelectModel<typeof posts>;
+export type Like = InferSelectModel<typeof likes>;
+export type Comment = InferSelectModel<typeof comments>;
+
+export type PostDetails = {
+  id: string;
+  imageUrl: string;
+  caption: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  likesCount?: number;
+  commentsCount?: number;
+};

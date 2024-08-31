@@ -1,34 +1,29 @@
 "use server";
 
 import {
-  batchAddImagesToAlbum,
   batchDelete,
-  getAllImages,
-  getRecommendedImages,
-  getUserAlbums,
-  getUserImages,
+  getAllPosts,
+  getPostsRecommendedPostsWithOwners,
+  getRecommendedPosts,
+  getUserPosts,
 } from "./queries";
 
 export const deleteImagesAction = async (imageIds: string[]) => {
   return await batchDelete(imageIds);
 };
 
-export async function fetchAllImages(page = 1, limit = 5) {
-  return await getAllImages(page, limit);
+export async function fetchAllPosts(page = 1, limit = 5) {
+  return await getAllPosts(page, limit);
 }
 
-export async function fetchRecommendedImages(page = 1, limit = 5) {
-  return await getRecommendedImages(page, limit);
+export async function fetchRecommendedPosts(page = 1, limit = 5) {
+  return await getRecommendedPosts(page, limit);
 }
 
-export async function fetchUserImages() {
-  return await getUserImages();
+export async function fetchUserPosts() {
+  return await getUserPosts();
 }
 
-export async function fetchUserAlbums() {
-  return await getUserAlbums();
-}
-
-export async function addImagesToAlbum(albumId: string, imageIds: string[]) {
-  return await batchAddImagesToAlbum(albumId, imageIds);
+export async function fetchRecommendedPostsWithOwners(page = 1, limit = 10) {
+  return await getPostsRecommendedPostsWithOwners(page, limit);
 }

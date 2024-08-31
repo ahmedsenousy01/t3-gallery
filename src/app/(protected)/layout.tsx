@@ -4,12 +4,12 @@ import "~/styles/globals.css";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 
-import Navbar from "~/app/_components/navbar";
 import { ourFileRouter } from "~/app/api/uploadthing/core";
 import ReduxStoreProvider from "~/components/providers/reduxStoreProvider";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "~/server/auth/core";
 import { Modals } from "../_components/modals/modals";
+import { Sidebar, TopNav, BottomNav } from "~/app/_components/navbars";
 
 export default async function RootLayout({
   children,
@@ -31,11 +31,13 @@ export default async function RootLayout({
            */
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
-        <div className="grid h-screen grid-rows-[auto,1fr]">
-          <Navbar />
+        <div className="grid h-screen grid-rows-[1fr,auto] sm:grid-cols-[auto,1fr]">
+          <TopNav />
+          <Sidebar />
           <main id="content" className="overflow-y-auto">
             {children}
           </main>
+          <BottomNav />
         </div>
         <Modals />
       </SessionProvider>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { UploadImageModal } from "./upload-image-modal";
-import { AddImagesToAlbumModal } from "./add-images-to-album-modal";
+// import { AddImagesToAlbumModal } from "./add-images-to-album-modal";
 
 export function Modals() {
   const [isClient, setIsClient] = useState(false);
@@ -16,7 +16,7 @@ export function Modals() {
       {isClient && (
         <>
           <UploadImageModal />
-          <AddImagesToAlbumModal />
+          {/* <AddImagesToAlbumModal /> */}
         </>
       )}
     </>

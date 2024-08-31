@@ -12,6 +12,7 @@
         "start": "next start"
     },
     "dependencies": {
+        "@auth/core": "^0.34.1",
         "@auth/drizzle-adapter": "^1.1.0",
         "@hookform/resolvers": "^3.4.2",
         "@radix-ui/react-avatar": "^1.0.4",

@@ -3,7 +3,7 @@ import { UploadThingError } from "uploadthing/server";
 import { nanoid } from "~/lib/utils";
 import { auth } from "~/server/auth/core";
 import { db } from "~/server/db";
-import { images } from "~/server/db/schema";
+import { posts } from "~/server/db/schema";
 
 const f = createUploadthing();
 
@@ -29,10 +29,10 @@ export const ourFileRouter = {
 
       console.log("file url", file.url);
 
-      await db.insert(images).values({
+      await db.insert(posts).values({
         id: nanoid(),
-        name: file.name,
-        url: file.url,
+        caption: file.name,
+        imageUrl: file.url,
         userId: metadata.userId,
       });
 
